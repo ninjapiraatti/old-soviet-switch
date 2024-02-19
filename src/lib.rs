@@ -58,17 +58,16 @@ impl <T1, T2, T3, T4> OldSovietSwitch<T1, T2, T3, T4>
         self.pin_top_right.listen(Event::FallingEdge);
         self.pin_main_switch.listen(Event::FallingEdge);
         interrupt::enable(peripherals::Interrupt::GPIO, interrupt::Priority::Priority3).unwrap();
-
-        critical_section::with(|cs| {
-            println!("GPIO interrupt");
-            //T1.borrow_ref_mut(cs).replace(self.pin_top_left);
-            //T2.borrow_ref_mut(cs).replace(self.pin_top_right);
-            //T3.borrow_ref_mut(cs).replace(self.pin_main_switch);
-        });
     
     }
 }
 
+#[interrupt]
+fn GPIO() {
+    critical_section::with(|cs| {
+        println!("GPIO interrupt");
+    });
+}
 /*
 impl InterruptHandler for OldSovietSwitch {
     fn handle_interrupt(&self) {
