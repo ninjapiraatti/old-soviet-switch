@@ -4,7 +4,13 @@
 use core::cell::{Cell, RefCell};
 use critical_section::Mutex;
 use esp32c3_hal::{
-    clock::ClockControl, gpio::{Event, Gpio4, Gpio5, Gpio6, Gpio7, Input, Output, PullDown, PullUp, PushPull, IO}, interrupt, peripheral::Peripheral, peripherals::{self, Peripherals}, prelude::*, Delay
+    clock::ClockControl,
+    gpio::{Event, Gpio4, Gpio5, Gpio6, Gpio7, Input, Output, PullDown, PullUp, PushPull, IO},
+    interrupt,
+    peripheral::Peripheral,
+    peripherals::{self, Peripherals},
+    prelude::*,
+    Delay,
 };
 use esp_backtrace as _;
 use esp_println::println;
@@ -44,32 +50,8 @@ fn main() -> ! {
 
     let clocks = ClockControl::max(system.clock_control).freeze();
     let mut delay = Delay::new(&clocks);
-    //let mut gpio4 = PinDriver::input(peripherals.pins.gpio4.downgrade_input())?;
-    //let ivan = OldSovietSwitch::new(TOP_LEFT, TOP_RIGHT, MAIN_SWITCH, LED);
     let mut ivan = OldSovietSwitch::new(top_left, top_right, main_switch, led);
-    interrupt::enable(peripherals::Interrupt::GPIO, interrupt::Priority::Priority3).unwrap();
-    /*
-    critical_section::with(|cs| {
-        println!("GPIO interrupt");
-        ivan.pin_top_left
-            .borrow_ref_mut(cs)
-            .as_mut()
-            .unwrap()
-            .clear_interrupt();
-    });
-    */
-    ivan.pin_top_left.listen(Event::FallingEdge);
-    critical_section::with(|cs| {
-        println!("GPIO interrupt");
-        TOP_LEFT.borrow_ref_mut(cs).replace(ivan.pin_top_left);
-        TOP_RIGHT.borrow_ref_mut(cs).replace(ivan.pin_top_right);
-        //MAIN_SWITCH.borrow_ref_mut(cs).replace(ivan.pin_main_switch);
-    });
-
-    // setup logger
-    // To change the log_level change the env section in .cargo/config.toml
-    // or remove it and set ESP_LOGLEVEL manually before running cargo run
-    // this requires a clean rebuild because of https://github.com/rust-lang/cargo/issues/10358
+    
     esp_println::logger::init_logger_from_env();
     log::info!("Logger is setup");
     println!("Hello world!");

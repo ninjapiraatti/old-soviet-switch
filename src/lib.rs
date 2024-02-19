@@ -1,35 +1,84 @@
 #![no_std]
 #![no_main]
 
+use critical_section::Mutex;
 use esp32c3_hal::{
     clock::ClockControl,
-    gpio::{GpioPin, Input, InputPin, Output, OutputPin, PullDown, PullUp, PushPull},
-    peripherals::Peripherals,
+    gpio::{
+        Event, Gpio4, Gpio5, Gpio6, Gpio7, GpioPin, Input, Output, InputPin, OutputPin, PullDown, PullUp, PushPull, IO,
+    },
+    interrupt,
+    peripheral::Peripheral,
+    peripherals::{self, Peripherals},
     prelude::*,
     Delay,
 };
 use esp_backtrace as _;
 use esp_println::println;
 
-pub struct OldSovietSwitch {
-    pub pin_top_left: GpioPin<Input<PullDown>, 4>,
-    pub pin_top_right: GpioPin<Input<PullDown>, 5>,
-    pub pin_main_switch: GpioPin<Input<PullDown>, 6>,
-    pub pin_led: GpioPin<Output<PushPull>, 7>,
+pub struct OldSovietSwitch<T1, T2, T3, T4>
+where
+    T1: InputPin,
+    T2: InputPin,
+    T3: InputPin,
+    T4: OutputPin,
+{
+    pub pin_top_left: T1,
+    pub pin_top_right: T2,
+    pub pin_main_switch: T3,
+    pub pin_led: T4,
 }
 
-impl OldSovietSwitch {
+impl <T1, T2, T3, T4> OldSovietSwitch<T1, T2, T3, T4>
+    where
+    T1: InputPin,
+    T2: InputPin,
+    T3: InputPin,
+    T4: OutputPin,
+{
     pub fn new(
-        pin_top_left: GpioPin<Input<PullDown>, 4>,
-        pin_top_right: GpioPin<Input<PullDown>, 5>,
-        pin_main_switch: GpioPin<Input<PullDown>, 6>,
-        pin_led: GpioPin<Output<PushPull>, 7>,
+        pin_top_left: T1,
+        pin_top_right: T2,
+        pin_main_switch: T3,
+        pin_led: T4,
     ) -> Self {
-        Self {
+        let mut instance = Self {
             pin_top_left,
             pin_top_right,
             pin_main_switch,
             pin_led,
+        };
+
+        instance.setup_interrupts();
+        instance
+    }
+
+    pub fn setup_interrupts(&mut self) {
+        self.pin_top_left.listen(Event::FallingEdge);
+        self.pin_top_right.listen(Event::FallingEdge);
+        self.pin_main_switch.listen(Event::FallingEdge);
+        interrupt::enable(peripherals::Interrupt::GPIO, interrupt::Priority::Priority3).unwrap();
+
+        critical_section::with(|cs| {
+            println!("GPIO interrupt");
+            //T1.borrow_ref_mut(cs).replace(self.pin_top_left);
+            //T2.borrow_ref_mut(cs).replace(self.pin_top_right);
+            //T3.borrow_ref_mut(cs).replace(self.pin_main_switch);
+        });
+    
+    }
+}
+
+/*
+impl InterruptHandler for OldSovietSwitch {
+    fn handle_interrupt(&self) {
+        // Your logic to handle interrupt
+        // For example, toggle LED when the main switch is pressed
+        if self.pin_main_switch.is_high().unwrap() {
+            self.pin_led.set_high().unwrap();
+        } else {
+            self.pin_led.set_low().unwrap();
         }
     }
 }
+*/
