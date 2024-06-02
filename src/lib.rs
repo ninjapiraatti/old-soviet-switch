@@ -88,29 +88,5 @@ impl <T1, T2, T3, T4, Callback> OldSovietSwitch<T1, T2, T3, T4, Callback>
         self.pin_top_right.listen(Event::FallingEdge);
         self.pin_main_switch.listen(Event::FallingEdge);
         interrupt::enable(peripherals::Interrupt::GPIO, interrupt::Priority::Priority3).unwrap();
-    
-    }
-
-    pub fn get_pins(&self) -> (&T1, &T2, &T3, &T4) {
-        (
-            &self.pin_top_left,
-            &self.pin_top_right,
-            &self.pin_main_switch,
-            &self.pin_led,
-        )
     }
 }
-
-/*
-impl InterruptHandler for OldSovietSwitch {
-    fn handle_interrupt(&self) {
-        // Your logic to handle interrupt
-        // For example, toggle LED when the main switch is pressed
-        if self.pin_main_switch.is_high().unwrap() {
-            self.pin_led.set_high().unwrap();
-        } else {
-            self.pin_led.set_low().unwrap();
-        }
-    }
-}
-*/
