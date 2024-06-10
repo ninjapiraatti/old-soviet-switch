@@ -6,9 +6,7 @@ use critical_section::Mutex;
 use esp32c3_hal::{
     clock::ClockControl,
     gpio::{Gpio4, Gpio5, Gpio6, Input, PullDown, IO},
-    interrupt,
-    peripheral::Peripheral,
-    peripherals::{self, Peripherals},
+    peripherals::Peripherals,
     prelude::*,
     Delay,
 };
@@ -40,12 +38,10 @@ fn main() -> ! {
     );
     critical_section::with(|cs| OLD_SOVIET_SWITCH.borrow_ref_mut(cs).replace(ivan));
 
-    esp_println::logger::init_logger_from_env();
-    log::info!("Logger is setup");
-    println!("Hello world!");
+    println!("Old soviet switch says hi.");
     loop {
         delay.delay_ms(500u32);
-        println!("LOOP");
+        println!("Loop..");
     }
 }
 

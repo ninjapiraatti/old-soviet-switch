@@ -10,29 +10,6 @@ use esp32c3_hal::{
 };
 use esp_backtrace as _;
 
-/*
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
-pub enum SwitchState {
-    TopLeft,
-    TopRight,
-    Main,
-    Neutral,
-}
-
-pub trait SwitchCallback<Message> {
-    fn call(&mut self, msg: Message);
-}
-
-impl<Message, F> SwitchCallback<Message> for F
-where
-    F: FnMut(Message),
-{
-    fn call(&mut self, msg: Message) {
-        self(msg)
-    }
-}
-*/
-
 pub struct OldSovietSwitch<T1, T2, T3>
 where
     T1: InputPin,
