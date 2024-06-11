@@ -17,8 +17,8 @@ use old_soviet_switch::*;
 static OLD_SOVIET_SWITCH: Mutex<RefCell<Option<OldSovietSwitch<
 Gpio6<Input<PullDown>>,
 Gpio5<Input<PullDown>>,
-Gpio4<Input<PullDown>
->>>>> = Mutex::new(RefCell::new(None));
+Gpio4<Input<PullDown>>
+>>>> = Mutex::new(RefCell::new(None));
 
 #[entry]
 fn main() -> ! {
@@ -50,8 +50,8 @@ fn main() -> ! {
 fn GPIO() {
     critical_section::with(|cs| {
         let switch_states = OLD_SOVIET_SWITCH.borrow_ref_mut(cs).as_mut().unwrap().read_state();
-        println!("1 High: {:?}", switch_states.0);
-        println!("2 High: {:?}", switch_states.1);
-        println!("3 High: {:?}", switch_states.2);
+        println!("1 High: {:?}", switch_states.pin1_main_high);
+        println!("2 High: {:?}", switch_states.pin2_bottom_left_high);
+        println!("3 High: {:?}", switch_states.pin3_bottom_right_high);
     });
 }

@@ -21,6 +21,12 @@ where
     pub pin3_bottom_right: T3,
 }
 
+pub struct OldSovietSwitchState {
+    pub pin1_main_high: bool,
+    pub pin2_bottom_left_high: bool,
+    pub pin3_bottom_right_high: bool,
+}
+
 impl <T1, T2, T3> OldSovietSwitch<T1, T2, T3>
     where
     T1: InputPin,
@@ -48,14 +54,14 @@ impl <T1, T2, T3> OldSovietSwitch<T1, T2, T3>
         self.pin3_bottom_right.listen(Event::FallingEdge);
         interrupt::enable(peripherals::Interrupt::GPIO, interrupt::Priority::Priority3).unwrap();
     }
-    pub fn read_state(&mut self) -> (bool, bool, bool) {
+    pub fn read_state(&mut self) -> OldSovietSwitchState {
         self.pin1_main.clear_interrupt();
         self.pin2_bottom_left.clear_interrupt();
         self.pin3_bottom_right.clear_interrupt();
-        (
-            self.pin1_main.is_input_high(),
-            self.pin2_bottom_left.is_input_high(),
-            self.pin3_bottom_right.is_input_high(),
-        )
+        OldSovietSwitchState {
+            pin1_main_high: self.pin1_main.is_input_high(),
+            pin2_bottom_left_high: self.pin2_bottom_left.is_input_high(),
+            pin3_bottom_right_high: self.pin3_bottom_right.is_input_high(), 
+        }
     }
 }
